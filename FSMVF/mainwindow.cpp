@@ -7,25 +7,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     
-//    ser_com = new QSerialPort;
+    serial_port = new QSerialPort;
 
-//    qDebug() << "Number of available ports: " << QSerialPortInfo::availablePorts().length();
+    connect_serial();
 
-    //Setup Serial Comms
-//    if(serial.open(QIODevice::WriteOnly))
-//    {
-//        if(!serial.setBaudRate(QSerialPort::Baud19200))
-//            qDebug()<<serial.errorString();
-//        if(!serial.setDataBits(QSerialPort::Data8))
-//            qDebug()<<serial.errorString();
-//        if(!serial.setParity(QSerialPort::NoParity))
-//            qDebug()<<serial.errorString();
-//        if(!serial.setStopBits(QSerialPort::OneStop))
-//            qDebug()<<serial.errorString();
-//        if(!serial.setFlowControl(QSerialPort::NoFlowControl))
-//            qDebug()<<serial.errorString();
-
-//    }
+    connect(serial_port, SIGNAL(readyRead()), this, SLOT(read_serial_port()));
 
     //Setup camera for video capture
     capture.open(1 + CAP_DSHOW);
@@ -57,12 +43,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    breakLoop = true;
-    destroyAllWindows();
-    capture.~VideoCapture();
-//    serial.close();
+    breakLoop = true;       //stop the loop
+    destroyAllWindows();    //close all open video windows
+    capture.~VideoCapture();//close video capture object
+    if(serial_port->isOpen())//close serial port
+        serial_port->close();
+
     this->destroy();
     event->accept();
+    QCoreApplication::quit();
 }
 
 void MainWindow::Start()
@@ -121,8 +110,6 @@ void MainWindow::Start()
         flame_width = flame_ROI_max_val.x - flame_ROI_min_val.x;
         flame_liftoff = (HEIGHT*2/3) - flame_ROI_max_val.y;
 
-
-
         //draw rectangle around flame
         rectangle(frame_cropped,flame_ROI_avg, Scalar(0,255,255), 2, 8, 0);
 
@@ -179,12 +166,89 @@ void MainWindow::Start()
             j = 0;
         }
         waitKey(30);
+
+        check_serial_port();
     }
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::connect_serial()
+{
+    //Check for port with correct Vid and Pid and get the port name
+    foreach(const QSerialPortInfo &serialPortInfo, QSerialPortInfo::availablePorts()) {
+        if(serialPortInfo.hasVendorIdentifier() && serialPortInfo.hasProductIdentifier())
+            if(serialPortInfo.vendorIdentifier() == PORT_VID)
+                if(serialPortInfo.productIdentifier() == PORT_PID) {
+                    port_name = serialPortInfo.portName();
+                    port_avail = true;
+                }
+    }
+
+    //If device is connected
+    if (port_avail) {
+        serial_port->setPortName(port_name);
+        if (serial_port->open(QSerialPort::ReadWrite))
+        {
+            ui->statusBar->showMessage(tr("Controller is connected."),0);
+            qDebug() << "Device at" << port_name << "is open.";
+            port_status = true;
+            update_status();
+        }
+        else
+        {
+            ui->statusBar->showMessage(tr("Can't connect to controller."),0);
+            qDebug() << "Error opening " << port_name;
+        }
+        serial_port->setBaudRate(QSerialPort::Baud115200);
+        serial_port->setDataBits(QSerialPort::Data8);
+        serial_port->setParity(QSerialPort::NoParity);
+        serial_port->setStopBits(QSerialPort::OneStop);
+        serial_port->setFlowControl(QSerialPort::NoFlowControl);
+    } else {
+      QMessageBox::warning(this,"Port Error","Device not found!");
+    }
+}
+
+void MainWindow::check_serial_port()
+{
+    port_status = serial_port->isOpen();
+    update_status();
+}
+
+void MainWindow::update_status()
+{
+    if (port_status)
+    {
+        ui->statusBar->showMessage("Controller connected.",0);
+        ui->connect_button->setText("Disconnect");
+    }
+    else
+    {
+        ui->statusBar->showMessage("Controller disconnected!",0);
+        ui->connect_button->setText("Connect");
+    }
+}
+
+void MainWindow::read_serial_port()
+{
+    qDebug() << serial_port->readAll();
+}
+
+void MainWindow::write_serial_port(QString command)
+{
+    if (serial_port->isWritable())
+    {
+        serial_port->write(command.toStdString().c_str());
+        qDebug() << command.toStdString().c_str();
+    } else
+    {
+        qDebug() << "Could not send command!";
+        check_serial_port();
+    }
 }
 
 void MainWindow::on_reset_button_clicked()
@@ -216,4 +280,35 @@ void MainWindow::on_exit_button_clicked()
 void MainWindow::on_checkBox_stateChanged(int arg1)
 {
    mm_or_cm = arg1 ? true : false;
+}
+
+void MainWindow::on_connect_button_clicked()
+{
+    if (port_status)
+        serial_port->close();
+    else
+        connect_serial();
+
+    check_serial_port();
+}
+
+
+void MainWindow::on_send_cmd_button_clicked()
+{
+    write_serial_port(ui->cmd_line->text());
+}
+
+void MainWindow::on_reset_dds_button_clicked()
+{
+    write_serial_port("R");
+}
+
+void MainWindow::on_ignite_button_clicked()
+{
+    write_serial_port("I");
+}
+
+void MainWindow::on_spark_button_clicked()
+{
+    write_serial_port("X");
 }

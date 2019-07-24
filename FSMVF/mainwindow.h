@@ -1,8 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QDebug>
 #include <QMainWindow>
+#include <QDebug>
+#include <QMessageBox>
 #include <QCloseEvent>
 #include <sstream>
 #include <string>
@@ -24,6 +25,9 @@
 #define PIX_TO_MM 0.81589958158995815899581589958159
 #define PIX_TO_CM 0.081589958158995815899581589958159
 
+#define PORT_VID 6790
+#define PORT_PID 29987
+
 using namespace cv;
 using namespace std;
 
@@ -37,6 +41,39 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
+
+    void Start();
+
+
+private slots:
+    void closeEvent(QCloseEvent *event);
+    void connect_serial();
+    void check_serial_port();
+    void update_status();
+    void read_serial_port();
+    void write_serial_port(QString);
+
+    void on_reset_button_clicked();
+
+    void on_set_button_clicked();
+
+    void on_exit_button_clicked();
+
+    void on_checkBox_stateChanged(int arg1);
+
+    void on_connect_button_clicked();
+
+    void on_send_cmd_button_clicked();
+
+    void on_reset_dds_button_clicked();
+
+    void on_ignite_button_clicked();
+
+    void on_spark_button_clicked();
+
+private:
+    Ui::MainWindow *ui;
 
     //Size of image windows
     Size WinSize;
@@ -78,11 +115,11 @@ public:
     Point flame_ROI_max_val;
     Point flame_ROI_min_val_avg;
     Point flame_ROI_max_val_avg;
-    
+
     //Boolean flags
     bool breakLoop = false; //for loop
     bool mm_or_cm = false; //changing length units
-    
+
     //Matrix for storing images
     Mat frame;
     Mat frame_HSV;
@@ -97,32 +134,18 @@ public:
     Rect flame_ROI_avg;
     //Camera object
     VideoCapture capture;
-    
+
     //Miscellaneous variables
     QString unit;
 
-    //Functions
-    void closeEvent(QCloseEvent *event);
-    void Start();
-    
-    //Serial Comms
-    QSerialPort ser_com;
-    QString ser_com_name;
 
-    ~MainWindow();
-private slots:
-    void on_reset_button_clicked();
-
-    void on_set_button_clicked();
-
-    void on_exit_button_clicked();
-
-    void on_checkBox_stateChanged(int arg1);
-
-private:
-    Ui::MainWindow *ui;
-
-
+    //Serial Port
+//    static const quint16 port_vid = 6790;
+//    static const quint16 port_pid = 29987;
+    QSerialPort *serial_port;
+    QString port_name;
+    bool port_avail = false;
+    bool port_status = false;
 };
 
 #endif // MAINWINDOW_H

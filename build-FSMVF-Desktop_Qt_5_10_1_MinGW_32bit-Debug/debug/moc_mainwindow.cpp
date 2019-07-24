@@ -46,7 +46,7 @@ QT_MOC_LITERAL(11, 148, 21), // "on_set_button_clicked"
 QT_MOC_LITERAL(12, 170, 22), // "on_exit_button_clicked"
 QT_MOC_LITERAL(13, 193, 24), // "on_checkBox_stateChanged"
 QT_MOC_LITERAL(14, 218, 4), // "arg1"
-QT_MOC_LITERAL(15, 223, 25), // "on_connect_button_clicked"
+QT_MOC_LITERAL(15, 223, 25), // "on_connect_Button_clicked"
 QT_MOC_LITERAL(16, 249, 26), // "on_send_cmd_button_clicked"
 QT_MOC_LITERAL(17, 276, 27), // "on_reset_dds_button_clicked"
 QT_MOC_LITERAL(18, 304, 24), // "on_ignite_button_clicked"
@@ -59,7 +59,7 @@ QT_MOC_LITERAL(19, 329, 23) // "on_spark_button_clicked"
     "write_serial_port\0on_reset_button_clicked\0"
     "on_set_button_clicked\0on_exit_button_clicked\0"
     "on_checkBox_stateChanged\0arg1\0"
-    "on_connect_button_clicked\0"
+    "on_connect_Button_clicked\0"
     "on_send_cmd_button_clicked\0"
     "on_reset_dds_button_clicked\0"
     "on_ignite_button_clicked\0"
@@ -133,7 +133,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 7: _t->on_set_button_clicked(); break;
         case 8: _t->on_exit_button_clicked(); break;
         case 9: _t->on_checkBox_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 10: _t->on_connect_button_clicked(); break;
+        case 10: _t->on_connect_Button_clicked(); break;
         case 11: _t->on_send_cmd_button_clicked(); break;
         case 12: _t->on_reset_dds_button_clicked(); break;
         case 13: _t->on_ignite_button_clicked(); break;

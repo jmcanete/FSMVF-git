@@ -501,7 +501,7 @@ public:
         label_3->setText(QApplication::translate("MainWindow", "Saturation - Minimum", nullptr));
         groupBox_EP->setTitle(QApplication::translate("MainWindow", "Excitation Parameters", nullptr));
         groupBox_C->setTitle(QApplication::translate("MainWindow", "Controller", nullptr));
-        connect_button->setText(QString());
+        connect_button->setText(QApplication::translate("MainWindow", "BLANK", nullptr));
 #ifndef QT_NO_SHORTCUT
         connect_button->setShortcut(QApplication::translate("MainWindow", "Alt+C", nullptr));
 #endif // QT_NO_SHORTCUT
