@@ -595,16 +595,16 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="stop_log_button">
+         <widget class="QPushButton" name="bode_log_button">
           <property name="text">
-           <string>Stop Log</string>
+           <string>Bode Plot Log</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="bode_log_button">
+         <widget class="QPushButton" name="stop_log_button">
           <property name="text">
-           <string>Bode Plot Log</string>
+           <string>Stop Log</string>
           </property>
          </widget>
         </item>

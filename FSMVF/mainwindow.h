@@ -30,8 +30,12 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 #define FPS 30
-#define PIX_TO_MM 0.81589958158995815899581589958159
-#define PIX_TO_CM 0.081589958158995815899581589958159
+//#define PIX_TO_MM 0.81589958158995815899581589958159
+//#define PIX_TO_CM 0.081589958158995815899581589958159
+//@pixtocm manual calibrated at 100 cm away from camera
+#define PIX_TO_MM 0.45045045045045045045045045045045
+#define PIX_TO_CM 0.04504504504504504504504504504505
+
 
 #define PORT_VID 6790
 #define PORT_PID 29987
@@ -100,8 +104,14 @@ public:
     QString str_flame_liftoff;
 
     //Boolean flags
-    bool breakLoop = false; //for loop
-    bool mm_or_cm = false; //changing length units
+    bool breakLoop = false; //for infinite loop
+    bool mm_or_cm = false;  //changing length units
+    bool port_avail = false;  //controller is connected
+    bool port_status = false; //controller is open
+    bool auto_ignite = false; //auto ignite
+    bool video_log = false; //data logging
+    bool csv_log = false;
+    bool bode_log = false;
 
     //Matrix for storing images
     Mat frame;
@@ -124,10 +134,8 @@ public:
     //Serial Port
     QSerialPort *serial_port;
     QString port_name;
-    bool port_avail = false;
-    bool port_status = false;
 
-    //CSV Logging
+    //Data Logging
     QDateTime *date_time;
     QTimer *timer;
     QFile file;
@@ -138,17 +146,19 @@ public:
     QString time_now;
     QStringList freqs = (QStringList() << "000050" << "000075" << "000100"<< "000125");
     int freq_cntr = 0;
-
-    bool auto_ignite = false;
+    int lcd_frames_cntr = 0;
+    int lcd_seconds_cntr = 0;
+    int lcd_freq_cntr = 0;
 
 private slots:
     void closeEvent(QCloseEvent *event);
-    void log_to_file();
+    void log_to_csv();
     void connect_serial();
     void check_serial_port();
     void update_serial_status();
-    void update_freq_value(QString);
     void reset_lcds();
+    void update_lcds();
+    void update_seconds_cntr();
     void read_serial_port();
     void write_serial_port(QString);
 
@@ -175,6 +185,12 @@ private slots:
     void on_contract_button_clicked();
 
     void on_auto_ignite_check_stateChanged(int arg1);
+
+    void on_start_log_button_clicked();
+
+    void on_stop_log_button_clicked();
+
+    void on_bode_log_button_clicked();
 
 private:
     Ui::MainWindow *ui;

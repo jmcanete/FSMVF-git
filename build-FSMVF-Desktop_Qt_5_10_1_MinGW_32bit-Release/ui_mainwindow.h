@@ -105,8 +105,8 @@ public:
     QHBoxLayout *horizontalLayout_8;
     QVBoxLayout *verticalLayout_8;
     QPushButton *start_log_button;
-    QPushButton *stop_log_button;
     QPushButton *bode_log_button;
+    QPushButton *stop_log_button;
     QFormLayout *formLayout_2;
     QLabel *label_frames;
     QLCDNumber *lcd_frames;
@@ -505,15 +505,15 @@ public:
 
         verticalLayout_8->addWidget(start_log_button);
 
-        stop_log_button = new QPushButton(widget);
-        stop_log_button->setObjectName(QStringLiteral("stop_log_button"));
-
-        verticalLayout_8->addWidget(stop_log_button);
-
         bode_log_button = new QPushButton(widget);
         bode_log_button->setObjectName(QStringLiteral("bode_log_button"));
 
         verticalLayout_8->addWidget(bode_log_button);
+
+        stop_log_button = new QPushButton(widget);
+        stop_log_button->setObjectName(QStringLiteral("stop_log_button"));
+
+        verticalLayout_8->addWidget(stop_log_button);
 
 
         horizontalLayout_8->addLayout(verticalLayout_8);
@@ -825,8 +825,8 @@ public:
 #endif // QT_NO_SHORTCUT
         groupBox->setTitle(QApplication::translate("MainWindow", "Data Logging", nullptr));
         start_log_button->setText(QApplication::translate("MainWindow", "Start Log", nullptr));
-        stop_log_button->setText(QApplication::translate("MainWindow", "Stop Log", nullptr));
         bode_log_button->setText(QApplication::translate("MainWindow", "Bode Plot Log", nullptr));
+        stop_log_button->setText(QApplication::translate("MainWindow", "Stop Log", nullptr));
         label_frames->setText(QApplication::translate("MainWindow", "Frames :", nullptr));
         label_frames_2->setText(QApplication::translate("MainWindow", "Seconds :", nullptr));
         label_frames_3->setText(QApplication::translate("MainWindow", "Frequency :", nullptr));

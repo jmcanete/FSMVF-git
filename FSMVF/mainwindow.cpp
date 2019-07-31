@@ -10,10 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //Setup csv logging
     date_time = new QDateTime();
     timer = new QTimer();
-//    timer->start(1000);
-//    connect(timer, SIGNAL(timeout()),this,SLOT(log_to_file()));
-//    freqs << "000050" << "000075" << "000100"<< "000125";
-
+    connect(timer, SIGNAL(timeout()),this,SLOT(update_seconds_cntr()));
 
     //Setup serial port for device comms
     serial_port = new QSerialPort;
@@ -52,12 +49,12 @@ MainWindow::MainWindow(QWidget *parent) :
     date = date_time->currentDateTime().date().toString("ddMMyy");
     time = date_time->currentDateTime().toLocalTime().time().toString("_hhmm");
 
-    vid_camera.open(QString(qApp->applicationDirPath() + "/Video Logs/camera_" + date + time + ".avi").toStdString(),CV_FOURCC('M','J','P','G'),30,WinSize);
-    if (!vid_camera.isOpened())
-        QMessageBox::warning(this,"Video Recording Error!","Cannot open Camera recording file.");
-    vid_output.open(QString(qApp->applicationDirPath() + "/Video Logs/output_" + date + time + ".avi").toStdString(),CV_FOURCC('M','J','P','G'),30,WinSize);
-    if (!vid_output.isOpened())
-        QMessageBox::warning(this,"Video Recording Error!","Cannot open Output recording file.");
+//    vid_camera.open(QString("C:/FSMVF_log_files/video_logs/camera_" + date + time + ".avi").toStdString(),CV_FOURCC('M','J','P','G'),30,WinSize);
+//    if (!vid_camera.isOpened())
+//        QMessageBox::warning(this,"Video Recording Error!","Cannot open Camera recording file.");
+//    vid_output.open(QString("C:/FSMVF_log_files/video_logs/output_" + date + time + ".avi").toStdString(),CV_FOURCC('M','J','P','G'),30,WinSize);
+//    if (!vid_output.isOpened())
+//        QMessageBox::warning(this,"Video Recording Error!","Cannot open Output recording file.");
 
 }
 
@@ -67,6 +64,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     destroyAllWindows();    //close all open video windows
     capture.~VideoCapture();//close video capture object
     vid_camera.~VideoWriter();
+    vid_output.~VideoWriter();
 
     if(serial_port->isOpen())//close serial port
         serial_port->close();
@@ -133,6 +131,10 @@ void MainWindow::Start()
         flame_width = flame_ROI_max_val.x - flame_ROI_min_val.x;
         flame_liftoff = (HEIGHT*2/3) - flame_ROI_max_val.y;
 
+        //@pixtocm calibration
+//        qDebug() << "Height :" << QStringLiteral("%L1").arg(flame_height);
+//        qDebug() << "Width :" << QStringLiteral("%L1").arg(flame_width);
+
         //draw rectangle around flame
         rectangle(frame_cropped,flame_ROI_avg, Scalar(0,255,255), 2, 8, 0);
 
@@ -159,11 +161,30 @@ void MainWindow::Start()
             flame_ROI_max_val_avg.x += flame_ROI_max_val.x;
             flame_ROI_max_val_avg.y += flame_ROI_max_val.y;
 
+            if (csv_log)
+            {
+                //Create strings for data logging
+                str_num_pixel = QStringLiteral("%L1").arg(pixels_num);
+                str_flame_area = QStringLiteral("%L1").arg(((pixels_num)*pow((factor),2)), 6, 'f', 2, '0');
+                str_flame_height = QStringLiteral("%L1").arg(((flame_height)*(factor)), 6, 'f', 2, '0');
+                str_flame_width = QStringLiteral("%L1").arg(((flame_width)*(factor)), 6, 'f', 2, '0');
+                str_flame_liftoff = QStringLiteral("%L1").arg(((flame_liftoff)*(factor)), 6, 'f', 2, '0');
 
+                log_to_csv();
+            }
+
+            if (video_log)
+            {
+                //update lcd value
+                lcd_frames_cntr++;
+                //save image to video
+                vid_camera.write(frame_cropped);  //Recording for camera
+                vid_output.write(frame_proc);  //Recording for processed image
+            }
         }
         else
         {
-            //Update variable per second
+            //Update variables per second
             flame_ROI_avg = boundingRect(pixels_location);
 //            flame_ROI_avg = Rect(Point((flame_ROI_min_val_avg.x/FPS),(flame_ROI_min_val_avg.y/FPS)),
 //                                 Point(flame_ROI_max_val_avg.x/FPS,flame_ROI_max_val_avg.y/FPS));
@@ -189,11 +210,6 @@ void MainWindow::Start()
             flame_liftoff_avg = 0;
             flame_ROI_min_val_avg = Point(0,0);
             flame_ROI_max_val_avg = Point(0,0);
-//            flame_ROI_min_val_avg.x = 0;
-//            flame_ROI_max_val_avg.y = 0;
-//            flame_ROI_min_val_avg.x = 0;
-//            flame_ROI_max_val_avg.y = 0;
-
             j = 0;
 
             //check if auto ignite is on
@@ -202,21 +218,17 @@ void MainWindow::Start()
 
         //end of 'per second' loop
         }
-        waitKey(30);
+        waitKey(5);
 
         //check if controller is connected
         check_serial_port();
 
-        //Code Block for @data_logging
-        {
-        //Save video/s
-        //Recording for camera
-            vid_camera << frame_cropped;
-
-        //Recording for processed image
-            vid_output << frame_HSV;
-
-        }
+//        //Code Block for @data_logging
+//        if (video_log)
+//        {
+//            vid_camera.write(frame_cropped);  //Recording for camera
+//            vid_output.write(frame_tmp);  //Recording for processed image
+//        }
 //        write_serial_port(freqs.at(freq_cntr) + "Q"); //This sets freq of DDS
 
         //
@@ -225,6 +237,8 @@ void MainWindow::Start()
 //        qDebug() << "ImageProc:" << proc_time.elapsed() << "ms";
 //        qDebug() << "ImageProc:" << proc_time.nsecsElapsed() << "ns";
 //        proc_time.restart();
+
+        update_lcds();
         //end of loop
     }
 }
@@ -234,7 +248,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::log_to_file()
+void MainWindow::log_to_csv()
 {
     date = date_time->currentDateTime().date().toString("ddMMyy");
     time = date_time->currentDateTime().toLocalTime().time().toString("_hhmm");
@@ -242,13 +256,16 @@ void MainWindow::log_to_file()
 //    qDebug() << date << time;
 //    qDebug() << time_now;
 
-    QFile file("csv_log_" + date + time +".csv");
+    QFile file("C:/FSMVF_log_files/csv_logs/csv_log_" + date + time +".csv");
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
         return;
 
     QTextStream out(&file);
     //Update this to record time,frequency,flame LD and flame area
-    out << time_now << "," << freqs.at(freq_cntr) << "," << str_flame_liftoff << "," << str_flame_area << endl;
+    if (bode_log)
+        out << time_now << "," << freqs.at(freq_cntr) << "," << str_flame_liftoff << "," << str_flame_area << endl;
+    else
+        out << time_now << "," << ui->lcd_freq->value() << "," << str_flame_liftoff << "," << str_flame_area << endl;
 }
 
 void MainWindow::connect_serial()
@@ -308,15 +325,23 @@ void MainWindow::update_serial_status()
     }
 }
 
-void MainWindow::update_freq_value(QString)
-{
-    ui->lcd_frames->display(0);
-    ui->lcd_seconds->display(0);
-    ui->lcd_freq->display(0);
-}
 void MainWindow::reset_lcds()
 {
+    lcd_frames_cntr = 0;
+    lcd_seconds_cntr = 0;
+    lcd_freq_cntr = 0;
+}
 
+void MainWindow::update_lcds()
+{
+    ui->lcd_frames->display(lcd_frames_cntr);
+    ui->lcd_seconds->display(lcd_seconds_cntr);
+    ui->lcd_freq->display(lcd_freq_cntr);
+}
+
+void MainWindow::update_seconds_cntr()
+{
+    lcd_seconds_cntr++;
 }
 
 void MainWindow::read_serial_port()
@@ -386,13 +411,16 @@ void MainWindow::on_send_cmd_button_clicked()
 //    qDebug() << cmd;
     write_serial_port(cmd);
 
-    ui->lcd_freq->display(ui->freqBox->text().toInt());
+    lcd_freq_cntr = ui->freqBox->text().toInt();
+    update_lcds();
 }
 
 void MainWindow::on_reset_dds_button_clicked()
 {
     write_serial_port("R");
-    reset_lcds();
+    lcd_freq_cntr = 0;
+    ui->freqBox->setValue(0);
+    update_lcds();
 }
 
 void MainWindow::on_ignite_button_clicked()
@@ -415,9 +443,45 @@ void MainWindow::on_contract_button_clicked()
     write_serial_port("C");
 }
 
-
-
 void MainWindow::on_auto_ignite_check_stateChanged(int arg1)
 {
     auto_ignite = arg1 ? true : false;
+}
+
+void MainWindow::on_start_log_button_clicked()
+{
+    video_log = true;
+    csv_log = true;
+
+    //start timer for updating the lcd
+    timer->start(1000);
+    //open a file for video logging
+    vid_camera.open(QString("C:/FSMVF_log_files/video_logs/camera_" + date + time + ".avi").toStdString(),CV_FOURCC('M','J','P','G'),30,WinSize);
+    if (!vid_camera.isOpened())
+        QMessageBox::warning(this,"Video Recording Error!","Cannot open Camera recording file.");
+    vid_output.open(QString("C:/FSMVF_log_files/video_logs/output_" + date + time + ".avi").toStdString(),CV_FOURCC('M','J','P','G'),30,WinSize);
+    if (!vid_output.isOpened())
+        QMessageBox::warning(this,"Video Recording Error!","Cannot open Output recording file.");
+
+}
+
+void MainWindow::on_stop_log_button_clicked()
+{
+    video_log = false;
+    csv_log = false;
+    bode_log =false;
+
+    reset_lcds();
+    update_lcds();
+    on_reset_button_clicked();
+
+    timer->stop();
+    vid_camera.~VideoWriter();
+    vid_output.~VideoWriter();
+}
+
+void MainWindow::on_bode_log_button_clicked()
+{
+    bode_log = true;
+    on_start_log_button_clicked();
 }
