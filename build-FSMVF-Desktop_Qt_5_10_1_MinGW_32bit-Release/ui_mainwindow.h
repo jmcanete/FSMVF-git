@@ -14,17 +14,17 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
+#include <QtWidgets/QFormLayout>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QSpinBox>
-#include <QtWidgets/QSplitter>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
@@ -86,22 +86,41 @@ public:
     QGroupBox *groupBox_EP;
     QGroupBox *groupBox_C;
     QPushButton *connect_button;
-    QWidget *widget;
-    QHBoxLayout *horizontalLayout_7;
-    QPushButton *send_cmd_button;
-    QLineEdit *cmd_line;
-    QSplitter *splitter;
-    QPushButton *reset_dds_button;
+    QWidget *layoutWidget;
+    QFormLayout *formLayout;
+    QPushButton *extend_button;
     QPushButton *ignite_button;
+    QPushButton *contract_button;
     QPushButton *spark_button;
+    QPushButton *send_cmd_button;
+    QPushButton *reset_dds_button;
+    QWidget *layoutWidget1;
+    QHBoxLayout *horizontalLayout_7;
+    QSlider *freqSlider;
+    QSpinBox *freqBox;
+    QCheckBox *auto_ignite_check;
     QPushButton *exit_button;
+    QGroupBox *groupBox;
+    QWidget *widget;
+    QHBoxLayout *horizontalLayout_8;
+    QVBoxLayout *verticalLayout_8;
+    QPushButton *start_log_button;
+    QPushButton *stop_log_button;
+    QPushButton *bode_log_button;
+    QFormLayout *formLayout_2;
+    QLabel *label_frames;
+    QLCDNumber *lcd_frames;
+    QLabel *label_frames_2;
+    QLCDNumber *lcd_seconds;
+    QLabel *label_frames_3;
+    QLCDNumber *lcd_freq;
     QStatusBar *statusBar;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(665, 510);
+        MainWindow->resize(660, 510);
         MainWindow->setMouseTracking(false);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
@@ -202,7 +221,7 @@ public:
         checkBox = new QCheckBox(groupBox_FP);
         checkBox->setObjectName(QStringLiteral("checkBox"));
         checkBox->setLayoutDirection(Qt::LeftToRight);
-        checkBox->setTristate(true);
+        checkBox->setTristate(false);
 
         verticalLayout_2->addWidget(checkBox);
 
@@ -397,44 +416,330 @@ public:
         groupBox_C->setGeometry(QRect(10, 370, 315, 110));
         connect_button = new QPushButton(groupBox_C);
         connect_button->setObjectName(QStringLiteral("connect_button"));
-        connect_button->setGeometry(QRect(10, 80, 75, 23));
+        connect_button->setGeometry(QRect(230, 80, 75, 23));
         connect_button->setFlat(false);
-        widget = new QWidget(groupBox_C);
-        widget->setObjectName(QStringLiteral("widget"));
-        widget->setGeometry(QRect(10, 20, 211, 25));
-        horizontalLayout_7 = new QHBoxLayout(widget);
+        layoutWidget = new QWidget(groupBox_C);
+        layoutWidget->setObjectName(QStringLiteral("layoutWidget"));
+        layoutWidget->setGeometry(QRect(10, 20, 158, 83));
+        formLayout = new QFormLayout(layoutWidget);
+        formLayout->setSpacing(6);
+        formLayout->setContentsMargins(11, 11, 11, 11);
+        formLayout->setObjectName(QStringLiteral("formLayout"));
+        formLayout->setContentsMargins(0, 0, 0, 0);
+        extend_button = new QPushButton(layoutWidget);
+        extend_button->setObjectName(QStringLiteral("extend_button"));
+
+        formLayout->setWidget(1, QFormLayout::LabelRole, extend_button);
+
+        ignite_button = new QPushButton(layoutWidget);
+        ignite_button->setObjectName(QStringLiteral("ignite_button"));
+
+        formLayout->setWidget(1, QFormLayout::FieldRole, ignite_button);
+
+        contract_button = new QPushButton(layoutWidget);
+        contract_button->setObjectName(QStringLiteral("contract_button"));
+
+        formLayout->setWidget(2, QFormLayout::LabelRole, contract_button);
+
+        spark_button = new QPushButton(layoutWidget);
+        spark_button->setObjectName(QStringLiteral("spark_button"));
+
+        formLayout->setWidget(2, QFormLayout::FieldRole, spark_button);
+
+        send_cmd_button = new QPushButton(layoutWidget);
+        send_cmd_button->setObjectName(QStringLiteral("send_cmd_button"));
+
+        formLayout->setWidget(0, QFormLayout::FieldRole, send_cmd_button);
+
+        reset_dds_button = new QPushButton(layoutWidget);
+        reset_dds_button->setObjectName(QStringLiteral("reset_dds_button"));
+
+        formLayout->setWidget(0, QFormLayout::LabelRole, reset_dds_button);
+
+        layoutWidget1 = new QWidget(groupBox_C);
+        layoutWidget1->setObjectName(QStringLiteral("layoutWidget1"));
+        layoutWidget1->setGeometry(QRect(170, 20, 141, 21));
+        horizontalLayout_7 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_7->setSpacing(6);
         horizontalLayout_7->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_7->setObjectName(QStringLiteral("horizontalLayout_7"));
         horizontalLayout_7->setContentsMargins(0, 0, 0, 0);
-        send_cmd_button = new QPushButton(widget);
-        send_cmd_button->setObjectName(QStringLiteral("send_cmd_button"));
+        freqSlider = new QSlider(layoutWidget1);
+        freqSlider->setObjectName(QStringLiteral("freqSlider"));
+        freqSlider->setMaximum(999);
+        freqSlider->setSingleStep(1);
+        freqSlider->setOrientation(Qt::Horizontal);
+        freqSlider->setTickPosition(QSlider::NoTicks);
+        freqSlider->setTickInterval(50);
 
-        horizontalLayout_7->addWidget(send_cmd_button);
+        horizontalLayout_7->addWidget(freqSlider);
 
-        cmd_line = new QLineEdit(widget);
-        cmd_line->setObjectName(QStringLiteral("cmd_line"));
-        cmd_line->setMaxLength(7);
-        cmd_line->setAlignment(Qt::AlignCenter);
+        freqBox = new QSpinBox(layoutWidget1);
+        freqBox->setObjectName(QStringLiteral("freqBox"));
+        freqBox->setMaximum(999);
 
-        horizontalLayout_7->addWidget(cmd_line);
+        horizontalLayout_7->addWidget(freqBox);
 
-        splitter = new QSplitter(groupBox_C);
-        splitter->setObjectName(QStringLiteral("splitter"));
-        splitter->setGeometry(QRect(230, 20, 75, 79));
-        splitter->setOrientation(Qt::Vertical);
-        reset_dds_button = new QPushButton(splitter);
-        reset_dds_button->setObjectName(QStringLiteral("reset_dds_button"));
-        splitter->addWidget(reset_dds_button);
-        ignite_button = new QPushButton(splitter);
-        ignite_button->setObjectName(QStringLiteral("ignite_button"));
-        splitter->addWidget(ignite_button);
-        spark_button = new QPushButton(splitter);
-        spark_button->setObjectName(QStringLiteral("spark_button"));
-        splitter->addWidget(spark_button);
+        auto_ignite_check = new QCheckBox(groupBox_C);
+        auto_ignite_check->setObjectName(QStringLiteral("auto_ignite_check"));
+        auto_ignite_check->setGeometry(QRect(173, 53, 111, 17));
         exit_button = new QPushButton(centralWidget);
         exit_button->setObjectName(QStringLiteral("exit_button"));
-        exit_button->setGeometry(QRect(580, 450, 75, 23));
+        exit_button->setGeometry(QRect(575, 452, 75, 23));
+        groupBox = new QGroupBox(centralWidget);
+        groupBox->setObjectName(QStringLiteral("groupBox"));
+        groupBox->setGeometry(QRect(335, 370, 230, 110));
+        widget = new QWidget(groupBox);
+        widget->setObjectName(QStringLiteral("widget"));
+        widget->setGeometry(QRect(9, 19, 215, 85));
+        horizontalLayout_8 = new QHBoxLayout(widget);
+        horizontalLayout_8->setSpacing(6);
+        horizontalLayout_8->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
+        horizontalLayout_8->setContentsMargins(0, 0, 0, 0);
+        verticalLayout_8 = new QVBoxLayout();
+        verticalLayout_8->setSpacing(6);
+        verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
+        start_log_button = new QPushButton(widget);
+        start_log_button->setObjectName(QStringLiteral("start_log_button"));
+
+        verticalLayout_8->addWidget(start_log_button);
+
+        stop_log_button = new QPushButton(widget);
+        stop_log_button->setObjectName(QStringLiteral("stop_log_button"));
+
+        verticalLayout_8->addWidget(stop_log_button);
+
+        bode_log_button = new QPushButton(widget);
+        bode_log_button->setObjectName(QStringLiteral("bode_log_button"));
+
+        verticalLayout_8->addWidget(bode_log_button);
+
+
+        horizontalLayout_8->addLayout(verticalLayout_8);
+
+        formLayout_2 = new QFormLayout();
+        formLayout_2->setSpacing(6);
+        formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
+        label_frames = new QLabel(widget);
+        label_frames->setObjectName(QStringLiteral("label_frames"));
+        label_frames->setAlignment(Qt::AlignCenter);
+
+        formLayout_2->setWidget(0, QFormLayout::LabelRole, label_frames);
+
+        lcd_frames = new QLCDNumber(widget);
+        lcd_frames->setObjectName(QStringLiteral("lcd_frames"));
+        QPalette palette;
+        QBrush brush(QColor(0, 0, 0, 255));
+        brush.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::WindowText, brush);
+        QBrush brush1(QColor(170, 0, 0, 255));
+        brush1.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Button, brush1);
+        QBrush brush2(QColor(255, 0, 0, 255));
+        brush2.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Light, brush2);
+        QBrush brush3(QColor(212, 0, 0, 255));
+        brush3.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Midlight, brush3);
+        QBrush brush4(QColor(85, 0, 0, 255));
+        brush4.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Dark, brush4);
+        QBrush brush5(QColor(113, 0, 0, 255));
+        brush5.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Mid, brush5);
+        palette.setBrush(QPalette::Active, QPalette::Text, brush);
+        QBrush brush6(QColor(255, 255, 255, 255));
+        brush6.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::BrightText, brush6);
+        palette.setBrush(QPalette::Active, QPalette::ButtonText, brush);
+        palette.setBrush(QPalette::Active, QPalette::Base, brush6);
+        palette.setBrush(QPalette::Active, QPalette::Window, brush1);
+        palette.setBrush(QPalette::Active, QPalette::Shadow, brush);
+        QBrush brush7(QColor(212, 127, 127, 255));
+        brush7.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::AlternateBase, brush7);
+        QBrush brush8(QColor(255, 255, 220, 255));
+        brush8.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::ToolTipBase, brush8);
+        palette.setBrush(QPalette::Active, QPalette::ToolTipText, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::Button, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::Light, brush2);
+        palette.setBrush(QPalette::Inactive, QPalette::Midlight, brush3);
+        palette.setBrush(QPalette::Inactive, QPalette::Dark, brush4);
+        palette.setBrush(QPalette::Inactive, QPalette::Mid, brush5);
+        palette.setBrush(QPalette::Inactive, QPalette::Text, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::BrightText, brush6);
+        palette.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::Base, brush6);
+        palette.setBrush(QPalette::Inactive, QPalette::Window, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::Shadow, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::AlternateBase, brush7);
+        palette.setBrush(QPalette::Inactive, QPalette::ToolTipBase, brush8);
+        palette.setBrush(QPalette::Inactive, QPalette::ToolTipText, brush);
+        palette.setBrush(QPalette::Disabled, QPalette::WindowText, brush4);
+        palette.setBrush(QPalette::Disabled, QPalette::Button, brush1);
+        palette.setBrush(QPalette::Disabled, QPalette::Light, brush2);
+        palette.setBrush(QPalette::Disabled, QPalette::Midlight, brush3);
+        palette.setBrush(QPalette::Disabled, QPalette::Dark, brush4);
+        palette.setBrush(QPalette::Disabled, QPalette::Mid, brush5);
+        palette.setBrush(QPalette::Disabled, QPalette::Text, brush4);
+        palette.setBrush(QPalette::Disabled, QPalette::BrightText, brush6);
+        palette.setBrush(QPalette::Disabled, QPalette::ButtonText, brush4);
+        palette.setBrush(QPalette::Disabled, QPalette::Base, brush1);
+        palette.setBrush(QPalette::Disabled, QPalette::Window, brush1);
+        palette.setBrush(QPalette::Disabled, QPalette::Shadow, brush);
+        palette.setBrush(QPalette::Disabled, QPalette::AlternateBase, brush1);
+        palette.setBrush(QPalette::Disabled, QPalette::ToolTipBase, brush8);
+        palette.setBrush(QPalette::Disabled, QPalette::ToolTipText, brush);
+        lcd_frames->setPalette(palette);
+        lcd_frames->setLayoutDirection(Qt::LeftToRight);
+        lcd_frames->setFrameShape(QFrame::Box);
+        lcd_frames->setFrameShadow(QFrame::Raised);
+        lcd_frames->setLineWidth(1);
+        lcd_frames->setMidLineWidth(0);
+        lcd_frames->setSmallDecimalPoint(false);
+        lcd_frames->setDigitCount(5);
+        lcd_frames->setSegmentStyle(QLCDNumber::Filled);
+
+        formLayout_2->setWidget(0, QFormLayout::FieldRole, lcd_frames);
+
+        label_frames_2 = new QLabel(widget);
+        label_frames_2->setObjectName(QStringLiteral("label_frames_2"));
+        label_frames_2->setAlignment(Qt::AlignCenter);
+
+        formLayout_2->setWidget(1, QFormLayout::LabelRole, label_frames_2);
+
+        lcd_seconds = new QLCDNumber(widget);
+        lcd_seconds->setObjectName(QStringLiteral("lcd_seconds"));
+        QPalette palette1;
+        palette1.setBrush(QPalette::Active, QPalette::WindowText, brush);
+        palette1.setBrush(QPalette::Active, QPalette::Button, brush1);
+        palette1.setBrush(QPalette::Active, QPalette::Light, brush2);
+        palette1.setBrush(QPalette::Active, QPalette::Midlight, brush3);
+        palette1.setBrush(QPalette::Active, QPalette::Dark, brush4);
+        palette1.setBrush(QPalette::Active, QPalette::Mid, brush5);
+        palette1.setBrush(QPalette::Active, QPalette::Text, brush);
+        palette1.setBrush(QPalette::Active, QPalette::BrightText, brush6);
+        palette1.setBrush(QPalette::Active, QPalette::ButtonText, brush);
+        palette1.setBrush(QPalette::Active, QPalette::Base, brush6);
+        palette1.setBrush(QPalette::Active, QPalette::Window, brush1);
+        palette1.setBrush(QPalette::Active, QPalette::Shadow, brush);
+        palette1.setBrush(QPalette::Active, QPalette::AlternateBase, brush7);
+        palette1.setBrush(QPalette::Active, QPalette::ToolTipBase, brush8);
+        palette1.setBrush(QPalette::Active, QPalette::ToolTipText, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::Button, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::Light, brush2);
+        palette1.setBrush(QPalette::Inactive, QPalette::Midlight, brush3);
+        palette1.setBrush(QPalette::Inactive, QPalette::Dark, brush4);
+        palette1.setBrush(QPalette::Inactive, QPalette::Mid, brush5);
+        palette1.setBrush(QPalette::Inactive, QPalette::Text, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::BrightText, brush6);
+        palette1.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::Base, brush6);
+        palette1.setBrush(QPalette::Inactive, QPalette::Window, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::Shadow, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::AlternateBase, brush7);
+        palette1.setBrush(QPalette::Inactive, QPalette::ToolTipBase, brush8);
+        palette1.setBrush(QPalette::Inactive, QPalette::ToolTipText, brush);
+        palette1.setBrush(QPalette::Disabled, QPalette::WindowText, brush4);
+        palette1.setBrush(QPalette::Disabled, QPalette::Button, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::Light, brush2);
+        palette1.setBrush(QPalette::Disabled, QPalette::Midlight, brush3);
+        palette1.setBrush(QPalette::Disabled, QPalette::Dark, brush4);
+        palette1.setBrush(QPalette::Disabled, QPalette::Mid, brush5);
+        palette1.setBrush(QPalette::Disabled, QPalette::Text, brush4);
+        palette1.setBrush(QPalette::Disabled, QPalette::BrightText, brush6);
+        palette1.setBrush(QPalette::Disabled, QPalette::ButtonText, brush4);
+        palette1.setBrush(QPalette::Disabled, QPalette::Base, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::Window, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::Shadow, brush);
+        palette1.setBrush(QPalette::Disabled, QPalette::AlternateBase, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::ToolTipBase, brush8);
+        palette1.setBrush(QPalette::Disabled, QPalette::ToolTipText, brush);
+        lcd_seconds->setPalette(palette1);
+        lcd_seconds->setLayoutDirection(Qt::LeftToRight);
+        lcd_seconds->setFrameShape(QFrame::Box);
+        lcd_seconds->setFrameShadow(QFrame::Raised);
+        lcd_seconds->setLineWidth(1);
+        lcd_seconds->setMidLineWidth(0);
+        lcd_seconds->setSmallDecimalPoint(false);
+        lcd_seconds->setDigitCount(5);
+        lcd_seconds->setSegmentStyle(QLCDNumber::Filled);
+
+        formLayout_2->setWidget(1, QFormLayout::FieldRole, lcd_seconds);
+
+        label_frames_3 = new QLabel(widget);
+        label_frames_3->setObjectName(QStringLiteral("label_frames_3"));
+        label_frames_3->setAlignment(Qt::AlignCenter);
+
+        formLayout_2->setWidget(2, QFormLayout::LabelRole, label_frames_3);
+
+        lcd_freq = new QLCDNumber(widget);
+        lcd_freq->setObjectName(QStringLiteral("lcd_freq"));
+        QPalette palette2;
+        palette2.setBrush(QPalette::Active, QPalette::WindowText, brush);
+        palette2.setBrush(QPalette::Active, QPalette::Button, brush1);
+        palette2.setBrush(QPalette::Active, QPalette::Light, brush2);
+        palette2.setBrush(QPalette::Active, QPalette::Midlight, brush3);
+        palette2.setBrush(QPalette::Active, QPalette::Dark, brush4);
+        palette2.setBrush(QPalette::Active, QPalette::Mid, brush5);
+        palette2.setBrush(QPalette::Active, QPalette::Text, brush);
+        palette2.setBrush(QPalette::Active, QPalette::BrightText, brush6);
+        palette2.setBrush(QPalette::Active, QPalette::ButtonText, brush);
+        palette2.setBrush(QPalette::Active, QPalette::Base, brush6);
+        palette2.setBrush(QPalette::Active, QPalette::Window, brush1);
+        palette2.setBrush(QPalette::Active, QPalette::Shadow, brush);
+        palette2.setBrush(QPalette::Active, QPalette::AlternateBase, brush7);
+        palette2.setBrush(QPalette::Active, QPalette::ToolTipBase, brush8);
+        palette2.setBrush(QPalette::Active, QPalette::ToolTipText, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::Button, brush1);
+        palette2.setBrush(QPalette::Inactive, QPalette::Light, brush2);
+        palette2.setBrush(QPalette::Inactive, QPalette::Midlight, brush3);
+        palette2.setBrush(QPalette::Inactive, QPalette::Dark, brush4);
+        palette2.setBrush(QPalette::Inactive, QPalette::Mid, brush5);
+        palette2.setBrush(QPalette::Inactive, QPalette::Text, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::BrightText, brush6);
+        palette2.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::Base, brush6);
+        palette2.setBrush(QPalette::Inactive, QPalette::Window, brush1);
+        palette2.setBrush(QPalette::Inactive, QPalette::Shadow, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::AlternateBase, brush7);
+        palette2.setBrush(QPalette::Inactive, QPalette::ToolTipBase, brush8);
+        palette2.setBrush(QPalette::Inactive, QPalette::ToolTipText, brush);
+        palette2.setBrush(QPalette::Disabled, QPalette::WindowText, brush4);
+        palette2.setBrush(QPalette::Disabled, QPalette::Button, brush1);
+        palette2.setBrush(QPalette::Disabled, QPalette::Light, brush2);
+        palette2.setBrush(QPalette::Disabled, QPalette::Midlight, brush3);
+        palette2.setBrush(QPalette::Disabled, QPalette::Dark, brush4);
+        palette2.setBrush(QPalette::Disabled, QPalette::Mid, brush5);
+        palette2.setBrush(QPalette::Disabled, QPalette::Text, brush4);
+        palette2.setBrush(QPalette::Disabled, QPalette::BrightText, brush6);
+        palette2.setBrush(QPalette::Disabled, QPalette::ButtonText, brush4);
+        palette2.setBrush(QPalette::Disabled, QPalette::Base, brush1);
+        palette2.setBrush(QPalette::Disabled, QPalette::Window, brush1);
+        palette2.setBrush(QPalette::Disabled, QPalette::Shadow, brush);
+        palette2.setBrush(QPalette::Disabled, QPalette::AlternateBase, brush1);
+        palette2.setBrush(QPalette::Disabled, QPalette::ToolTipBase, brush8);
+        palette2.setBrush(QPalette::Disabled, QPalette::ToolTipText, brush);
+        lcd_freq->setPalette(palette2);
+        lcd_freq->setLayoutDirection(Qt::LeftToRight);
+        lcd_freq->setFrameShape(QFrame::Box);
+        lcd_freq->setFrameShadow(QFrame::Raised);
+        lcd_freq->setLineWidth(1);
+        lcd_freq->setMidLineWidth(0);
+        lcd_freq->setSmallDecimalPoint(false);
+        lcd_freq->setDigitCount(5);
+        lcd_freq->setSegmentStyle(QLCDNumber::Filled);
+
+        formLayout_2->setWidget(2, QFormLayout::FieldRole, lcd_freq);
+
+
+        horizontalLayout_8->addLayout(formLayout_2);
+
         MainWindow->setCentralWidget(centralWidget);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
@@ -465,6 +770,8 @@ public:
         QObject::connect(VminBox, SIGNAL(valueChanged(int)), horizontalSlider_5, SLOT(setValue(int)));
         QObject::connect(horizontalSlider_6, SIGNAL(valueChanged(int)), VmaxBox, SLOT(setValue(int)));
         QObject::connect(VmaxBox, SIGNAL(valueChanged(int)), horizontalSlider_6, SLOT(setValue(int)));
+        QObject::connect(freqSlider, SIGNAL(valueChanged(int)), freqBox, SLOT(setValue(int)));
+        QObject::connect(freqBox, SIGNAL(valueChanged(int)), freqSlider, SLOT(setValue(int)));
 
         connect_button->setDefault(false);
 
@@ -505,15 +812,24 @@ public:
 #ifndef QT_NO_SHORTCUT
         connect_button->setShortcut(QApplication::translate("MainWindow", "Alt+C", nullptr));
 #endif // QT_NO_SHORTCUT
-        send_cmd_button->setText(QApplication::translate("MainWindow", "Send Command", nullptr));
-        cmd_line->setPlaceholderText(QApplication::translate("MainWindow", "Input Command", nullptr));
-        reset_dds_button->setText(QApplication::translate("MainWindow", "Reset DDS", nullptr));
+        extend_button->setText(QApplication::translate("MainWindow", "Extend", nullptr));
         ignite_button->setText(QApplication::translate("MainWindow", "Ignite Flame", nullptr));
+        contract_button->setText(QApplication::translate("MainWindow", "Contract", nullptr));
         spark_button->setText(QApplication::translate("MainWindow", "Spark", nullptr));
+        send_cmd_button->setText(QApplication::translate("MainWindow", "Send CMD", nullptr));
+        reset_dds_button->setText(QApplication::translate("MainWindow", "Reset DDS", nullptr));
+        auto_ignite_check->setText(QApplication::translate("MainWindow", "Auto Ignite On", nullptr));
         exit_button->setText(QApplication::translate("MainWindow", "Exit", nullptr));
 #ifndef QT_NO_SHORTCUT
         exit_button->setShortcut(QApplication::translate("MainWindow", "Alt+X", nullptr));
 #endif // QT_NO_SHORTCUT
+        groupBox->setTitle(QApplication::translate("MainWindow", "Data Logging", nullptr));
+        start_log_button->setText(QApplication::translate("MainWindow", "Start Log", nullptr));
+        stop_log_button->setText(QApplication::translate("MainWindow", "Stop Log", nullptr));
+        bode_log_button->setText(QApplication::translate("MainWindow", "Bode Plot Log", nullptr));
+        label_frames->setText(QApplication::translate("MainWindow", "Frames :", nullptr));
+        label_frames_2->setText(QApplication::translate("MainWindow", "Seconds :", nullptr));
+        label_frames_3->setText(QApplication::translate("MainWindow", "Frequency :", nullptr));
     } // retranslateUi
 
 };

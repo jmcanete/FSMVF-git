@@ -6,11 +6,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    
+
+    //Setup csv logging
+    date_time = new QDateTime();
+    timer = new QTimer();
+//    timer->start(1000);
+//    connect(timer, SIGNAL(timeout()),this,SLOT(log_to_file()));
+//    freqs << "000050" << "000075" << "000100"<< "000125";
+
+
+    //Setup serial port for device comms
     serial_port = new QSerialPort;
-
     connect_serial();
-
     connect(serial_port, SIGNAL(readyRead()), this, SLOT(read_serial_port()));
 
     //Setup camera for video capture
@@ -39,6 +46,19 @@ MainWindow::MainWindow(QWidget *parent) :
     ROI.y = crop_y;
     ROI.width = crop_width;
     ROI.height = crop_height;
+
+    //Setup recording of images
+    // get current date and time of hour
+    date = date_time->currentDateTime().date().toString("ddMMyy");
+    time = date_time->currentDateTime().toLocalTime().time().toString("_hhmm");
+
+    vid_camera.open(QString(qApp->applicationDirPath() + "/Video Logs/camera_" + date + time + ".avi").toStdString(),CV_FOURCC('M','J','P','G'),30,WinSize);
+    if (!vid_camera.isOpened())
+        QMessageBox::warning(this,"Video Recording Error!","Cannot open Camera recording file.");
+    vid_output.open(QString(qApp->applicationDirPath() + "/Video Logs/output_" + date + time + ".avi").toStdString(),CV_FOURCC('M','J','P','G'),30,WinSize);
+    if (!vid_output.isOpened())
+        QMessageBox::warning(this,"Video Recording Error!","Cannot open Output recording file.");
+
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -46,17 +66,20 @@ void MainWindow::closeEvent(QCloseEvent *event)
     breakLoop = true;       //stop the loop
     destroyAllWindows();    //close all open video windows
     capture.~VideoCapture();//close video capture object
+    vid_camera.~VideoWriter();
+
     if(serial_port->isOpen())//close serial port
         serial_port->close();
 
     this->destroy();
     event->accept();
-    QCoreApplication::quit();
+//    QCoreApplication::quit();
 }
 
 void MainWindow::Start()
 {
     on_set_button_clicked();
+    proc_time.start();
     while (true)
     {
         if (breakLoop == true) return;
@@ -126,7 +149,7 @@ void MainWindow::Start()
         if (j < FPS)
         {
             j++;
-            //Update variables
+            //Update variables per frame
             pixels_avg += pixels_num;
             flame_height_avg += flame_height;
             flame_width_avg += flame_width;
@@ -135,9 +158,12 @@ void MainWindow::Start()
             flame_ROI_min_val_avg.y += flame_ROI_min_val.y;
             flame_ROI_max_val_avg.x += flame_ROI_max_val.x;
             flame_ROI_max_val_avg.y += flame_ROI_max_val.y;
+
+
         }
-        else //per second updates
+        else
         {
+            //Update variable per second
             flame_ROI_avg = boundingRect(pixels_location);
 //            flame_ROI_avg = Rect(Point((flame_ROI_min_val_avg.x/FPS),(flame_ROI_min_val_avg.y/FPS)),
 //                                 Point(flame_ROI_max_val_avg.x/FPS,flame_ROI_max_val_avg.y/FPS));
@@ -146,11 +172,16 @@ void MainWindow::Start()
             factor = mm_or_cm ? PIX_TO_MM : PIX_TO_CM;
             unit = mm_or_cm ? "mm" : "cm";
             //Update labels
-            ui->label_numPixel->setText(QStringLiteral("%L1 pixels").arg((pixels_avg/FPS)));
-            ui->label_flameAreaValue->setText(QStringLiteral("%L1 (%2)2").arg(((pixels_avg/FPS)*pow((factor),2)), 6, 'f', 2, '0').arg(unit));
-            ui->label_flameHeightValue->setText(QStringLiteral("%L1 %2").arg(((flame_height_avg/FPS)*(factor)), 6, 'f', 2, '0').arg(unit));
-            ui->label_flameWidthValue->setText(QStringLiteral("%L1 %2").arg(((flame_width_avg/FPS)*(factor)), 6, 'f', 2, '0').arg(unit));
-            ui->label_flameLiftoff->setText(QStringLiteral("%L1 %2").arg(((flame_liftoff_avg/FPS)*(factor)), 6, 'f', 2, '0').arg(unit));
+            str_num_pixel = QStringLiteral("%L1 pixels").arg((pixels_avg/FPS));
+            str_flame_area = QStringLiteral("%L1 (%2)2").arg(((pixels_avg/FPS)*pow((factor),2)), 6, 'f', 2, '0').arg(unit);
+            str_flame_height = QStringLiteral("%L1 %2").arg(((flame_height_avg/FPS)*(factor)), 6, 'f', 2, '0').arg(unit);
+            str_flame_width = QStringLiteral("%L1 %2").arg(((flame_width_avg/FPS)*(factor)), 6, 'f', 2, '0').arg(unit);
+            str_flame_liftoff = QStringLiteral("%L1 %2").arg(((flame_liftoff_avg/FPS)*(factor)), 6, 'f', 2, '0').arg(unit);
+            ui->label_numPixel->setText(str_num_pixel);
+            ui->label_flameAreaValue->setText(str_flame_area);
+            ui->label_flameHeightValue->setText(str_flame_height);
+            ui->label_flameWidthValue->setText(str_flame_width);
+            ui->label_flameLiftoff->setText(str_flame_liftoff);
             //Reset variables to zero
             pixels_avg = 0;
             flame_height_avg = 0;
@@ -164,16 +195,60 @@ void MainWindow::Start()
 //            flame_ROI_max_val_avg.y = 0;
 
             j = 0;
+
+            //check if auto ignite is on
+            if (auto_ignite && pixels_avg == 0)
+                on_ignite_button_clicked();
+
+        //end of 'per second' loop
         }
         waitKey(30);
 
+        //check if controller is connected
         check_serial_port();
+
+        //Code Block for @data_logging
+        {
+        //Save video/s
+        //Recording for camera
+            vid_camera << frame_cropped;
+
+        //Recording for processed image
+            vid_output << frame_HSV;
+
+        }
+//        write_serial_port(freqs.at(freq_cntr) + "Q"); //This sets freq of DDS
+
+        //
+
+        //Debug time elapsed @time_stamp
+//        qDebug() << "ImageProc:" << proc_time.elapsed() << "ms";
+//        qDebug() << "ImageProc:" << proc_time.nsecsElapsed() << "ns";
+//        proc_time.restart();
+        //end of loop
     }
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::log_to_file()
+{
+    date = date_time->currentDateTime().date().toString("ddMMyy");
+    time = date_time->currentDateTime().toLocalTime().time().toString("_hhmm");
+    time_now = date_time->currentDateTime().toLocalTime().time().toString("hh:mm:ss");
+//    qDebug() << date << time;
+//    qDebug() << time_now;
+
+    QFile file("csv_log_" + date + time +".csv");
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
+        return;
+
+    QTextStream out(&file);
+    //Update this to record time,frequency,flame LD and flame area
+    out << time_now << "," << freqs.at(freq_cntr) << "," << str_flame_liftoff << "," << str_flame_area << endl;
 }
 
 void MainWindow::connect_serial()
@@ -194,14 +269,14 @@ void MainWindow::connect_serial()
         if (serial_port->open(QSerialPort::ReadWrite))
         {
             ui->statusBar->showMessage(tr("Controller is connected."),0);
-            qDebug() << "Device at" << port_name << "is open.";
+            qDebug() << "SERIAL: Device at" << port_name << "is open.";
             port_status = true;
-            update_status();
+            update_serial_status();
         }
         else
         {
-            ui->statusBar->showMessage(tr("Can't connect to controller."),0);
-            qDebug() << "Error opening " << port_name;
+            ui->statusBar->showMessage(("Can't connect to controller."),0);
+            qDebug() << "SERIAL: Error opening " << port_name;
         }
         serial_port->setBaudRate(QSerialPort::Baud115200);
         serial_port->setDataBits(QSerialPort::Data8);
@@ -216,10 +291,10 @@ void MainWindow::connect_serial()
 void MainWindow::check_serial_port()
 {
     port_status = serial_port->isOpen();
-    update_status();
+    update_serial_status();
 }
 
-void MainWindow::update_status()
+void MainWindow::update_serial_status()
 {
     if (port_status)
     {
@@ -233,6 +308,17 @@ void MainWindow::update_status()
     }
 }
 
+void MainWindow::update_freq_value(QString)
+{
+    ui->lcd_frames->display(0);
+    ui->lcd_seconds->display(0);
+    ui->lcd_freq->display(0);
+}
+void MainWindow::reset_lcds()
+{
+
+}
+
 void MainWindow::read_serial_port()
 {
     qDebug() << serial_port->readAll();
@@ -243,14 +329,16 @@ void MainWindow::write_serial_port(QString command)
     if (serial_port->isWritable())
     {
         serial_port->write(command.toStdString().c_str());
-        qDebug() << command.toStdString().c_str();
+        qDebug() << "SERIAL: " << command.toStdString().c_str();
+//        qDebug() << command.toStdString().c_str();
     } else
     {
-        qDebug() << "Could not send command!";
+        qDebug() << "SERIAL: Could not send command!";
         check_serial_port();
     }
 }
 
+//auto-generated functions
 void MainWindow::on_reset_button_clicked()
 {
     ui->HminBox->setValue(0);
@@ -276,7 +364,6 @@ void MainWindow::on_exit_button_clicked()
     close();
 }
 
-
 void MainWindow::on_checkBox_stateChanged(int arg1)
 {
    mm_or_cm = arg1 ? true : false;
@@ -292,15 +379,20 @@ void MainWindow::on_connect_button_clicked()
     check_serial_port();
 }
 
-
 void MainWindow::on_send_cmd_button_clicked()
 {
-    write_serial_port(ui->cmd_line->text());
+    QString cmd;
+    cmd = QString::number(ui->freqBox->text().toInt()).rightJustified(6,'0') + "Q";
+//    qDebug() << cmd;
+    write_serial_port(cmd);
+
+    ui->lcd_freq->display(ui->freqBox->text().toInt());
 }
 
 void MainWindow::on_reset_dds_button_clicked()
 {
     write_serial_port("R");
+    reset_lcds();
 }
 
 void MainWindow::on_ignite_button_clicked()
@@ -311,4 +403,21 @@ void MainWindow::on_ignite_button_clicked()
 void MainWindow::on_spark_button_clicked()
 {
     write_serial_port("X");
+}
+
+void MainWindow::on_extend_button_clicked()
+{
+    write_serial_port("E");
+}
+
+void MainWindow::on_contract_button_clicked()
+{
+    write_serial_port("C");
+}
+
+
+
+void MainWindow::on_auto_ignite_check_stateChanged(int arg1)
+{
+    auto_ignite = arg1 ? true : false;
 }

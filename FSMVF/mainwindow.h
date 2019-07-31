@@ -2,12 +2,20 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
 #include <QDebug>
 #include <QMessageBox>
 #include <QCloseEvent>
-#include <sstream>
+#include <QDateTime>
+#include <QTimer>
+#include <QFile>
+#include <QTextStream>
+#include <QElapsedTimer>
+
+/*#include <sstream>
 #include <string>
-#include <iostream>
+#include <iostream>*/
+
 #include <thread>
 #include <QSerialPort>
 #include <QSerialPortInfo>
@@ -44,37 +52,6 @@ public:
     ~MainWindow();
 
     void Start();
-
-
-private slots:
-    void closeEvent(QCloseEvent *event);
-    void connect_serial();
-    void check_serial_port();
-    void update_status();
-    void read_serial_port();
-    void write_serial_port(QString);
-
-    void on_reset_button_clicked();
-
-    void on_set_button_clicked();
-
-    void on_exit_button_clicked();
-
-    void on_checkBox_stateChanged(int arg1);
-
-    void on_connect_button_clicked();
-
-    void on_send_cmd_button_clicked();
-
-    void on_reset_dds_button_clicked();
-
-    void on_ignite_button_clicked();
-
-    void on_spark_button_clicked();
-
-private:
-    Ui::MainWindow *ui;
-
     //Size of image windows
     Size WinSize;
     //Names for windows
@@ -99,8 +76,9 @@ private:
     //Variables for flow control, etc
     int j = 0;
     double factor;
+    QString unit;
 
-    //Pixel variables
+    //Flame variables
     int pixels_num;
     int pixels_avg;
     vector<Point> pixels_location;
@@ -115,6 +93,11 @@ private:
     Point flame_ROI_max_val;
     Point flame_ROI_min_val_avg;
     Point flame_ROI_max_val_avg;
+    QString str_num_pixel;
+    QString str_flame_area;
+    QString str_flame_height;
+    QString str_flame_width;
+    QString str_flame_liftoff;
 
     //Boolean flags
     bool breakLoop = false; //for loop
@@ -132,20 +115,70 @@ private:
     Rect ROI;
     Rect flame_ROI;
     Rect flame_ROI_avg;
+
     //Camera object
     VideoCapture capture;
-
-    //Miscellaneous variables
-    QString unit;
-
+    VideoWriter vid_camera;
+    VideoWriter vid_output;
 
     //Serial Port
-//    static const quint16 port_vid = 6790;
-//    static const quint16 port_pid = 29987;
     QSerialPort *serial_port;
     QString port_name;
     bool port_avail = false;
     bool port_status = false;
+
+    //CSV Logging
+    QDateTime *date_time;
+    QTimer *timer;
+    QFile file;
+    QTextStream out;
+    QElapsedTimer proc_time;
+    QString date;
+    QString time;
+    QString time_now;
+    QStringList freqs = (QStringList() << "000050" << "000075" << "000100"<< "000125");
+    int freq_cntr = 0;
+
+    bool auto_ignite = false;
+
+private slots:
+    void closeEvent(QCloseEvent *event);
+    void log_to_file();
+    void connect_serial();
+    void check_serial_port();
+    void update_serial_status();
+    void update_freq_value(QString);
+    void reset_lcds();
+    void read_serial_port();
+    void write_serial_port(QString);
+
+    void on_reset_button_clicked();
+
+    void on_set_button_clicked();
+
+    void on_exit_button_clicked();
+
+    void on_checkBox_stateChanged(int arg1);
+
+    void on_connect_button_clicked();
+
+    void on_send_cmd_button_clicked();
+
+    void on_reset_dds_button_clicked();
+
+    void on_ignite_button_clicked();
+
+    void on_spark_button_clicked();
+
+    void on_extend_button_clicked();
+
+    void on_contract_button_clicked();
+
+    void on_auto_ignite_check_stateChanged(int arg1);
+
+private:
+    Ui::MainWindow *ui;
+
 };
 
 #endif // MAINWINDOW_H
