@@ -46,8 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Setup recording of images
     // get current date and time of hour
-    date = date_time->currentDateTime().date().toString("ddMMyy");
-    time = date_time->currentDateTime().toLocalTime().time().toString("_hhmm");
+//    date = date_time->currentDateTime().date().toString("ddMMyy");
+//    time = date_time->currentDateTime().toLocalTime().time().toString("_hhmm");
 
 //    vid_camera.open(QString("C:/FSMVF_log_files/video_logs/camera_" + date + time + ".avi").toStdString(),CV_FOURCC('M','J','P','G'),30,WinSize);
 //    if (!vid_camera.isOpened())
@@ -81,7 +81,7 @@ void MainWindow::Start()
     while (true)
     {
         if (breakLoop == true) return;
-        //Get values from HSV widgets
+        //Get input values from GUI
         H_min = ui->HminBox->text().toInt();
         H_max = ui->HmaxBox->text().toInt();
         S_min = ui->SminBox->text().toInt();
@@ -96,7 +96,7 @@ void MainWindow::Start()
         //Convert to HSV
         cvtColor(frame_cropped,frame_HSV, COLOR_RGB2HSV_FULL);
 
-        //Draw horizontal and vertical line for alignment
+        //Draw horizontal and vertical line for camera alignment
         line(frame_cropped,
              Point(0,(crop_height*2)/3),
              Point(crop_width,(crop_height*2)/3),
@@ -141,6 +141,16 @@ void MainWindow::Start()
         //Apply a mask based on the HSV threshold (Show the flame pixels)
         cvtColor(frame_mask,frame_mask,CV_GRAY2RGB); //convert mask to correct number of channels
         bitwise_and(frame_cropped,frame_mask,frame_tmp); //Show the flame pixels
+
+//        if (video_log)
+//        {
+//            //update lcd value
+//            lcd_frames_cntr++;
+//            //save image to video
+//            vid_camera.write(frame_cropped);  //Recording for camera
+//            vid_output.write(frame_proc);  //Recording for processed image
+//        }
+
 
         //Update image variables and display on windows
         frame_tmp.copyTo(frame_proc);
@@ -456,13 +466,15 @@ void MainWindow::on_start_log_button_clicked()
     //start timer for updating the lcd
     timer->start(1000);
     //open a file for video logging
+    date = date_time->currentDateTime().date().toString("ddMMyy");
+    time = date_time->currentDateTime().toLocalTime().time().toString("_hhmm");
+
     vid_camera.open(QString("C:/FSMVF_log_files/video_logs/camera_" + date + time + ".avi").toStdString(),CV_FOURCC('M','J','P','G'),30,WinSize);
     if (!vid_camera.isOpened())
         QMessageBox::warning(this,"Video Recording Error!","Cannot open Camera recording file.");
     vid_output.open(QString("C:/FSMVF_log_files/video_logs/output_" + date + time + ".avi").toStdString(),CV_FOURCC('M','J','P','G'),30,WinSize);
     if (!vid_output.isOpened())
         QMessageBox::warning(this,"Video Recording Error!","Cannot open Output recording file.");
-
 }
 
 void MainWindow::on_stop_log_button_clicked()
@@ -473,7 +485,7 @@ void MainWindow::on_stop_log_button_clicked()
 
     reset_lcds();
     update_lcds();
-    on_reset_button_clicked();
+    on_reset_dds_button_clicked();
 
     timer->stop();
     vid_camera.~VideoWriter();
@@ -483,5 +495,6 @@ void MainWindow::on_stop_log_button_clicked()
 void MainWindow::on_bode_log_button_clicked()
 {
     bode_log = true;
+
     on_start_log_button_clicked();
 }

@@ -147,7 +147,7 @@ public:
                          << "000050"
                          << "000075"
                          << "000100"
-                         << "000125");
+                         << "000200");
     int freq_cntr = 0;
     int bode_duration = 0;
     int lcd_frames_cntr = 0;
