@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[30];
-    char stringdata0[582];
+    QByteArrayData data[31];
+    char stringdata0[595];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -45,22 +45,23 @@ QT_MOC_LITERAL(10, 118, 11), // "update_lcds"
 QT_MOC_LITERAL(11, 130, 19), // "update_seconds_cntr"
 QT_MOC_LITERAL(12, 150, 16), // "read_serial_port"
 QT_MOC_LITERAL(13, 167, 17), // "write_serial_port"
-QT_MOC_LITERAL(14, 185, 23), // "on_reset_button_clicked"
-QT_MOC_LITERAL(15, 209, 21), // "on_set_button_clicked"
-QT_MOC_LITERAL(16, 231, 22), // "on_exit_button_clicked"
-QT_MOC_LITERAL(17, 254, 24), // "on_checkBox_stateChanged"
-QT_MOC_LITERAL(18, 279, 4), // "arg1"
-QT_MOC_LITERAL(19, 284, 25), // "on_connect_button_clicked"
-QT_MOC_LITERAL(20, 310, 26), // "on_send_cmd_button_clicked"
-QT_MOC_LITERAL(21, 337, 27), // "on_reset_dds_button_clicked"
-QT_MOC_LITERAL(22, 365, 24), // "on_ignite_button_clicked"
-QT_MOC_LITERAL(23, 390, 23), // "on_spark_button_clicked"
-QT_MOC_LITERAL(24, 414, 24), // "on_extend_button_clicked"
-QT_MOC_LITERAL(25, 439, 26), // "on_contract_button_clicked"
-QT_MOC_LITERAL(26, 466, 33), // "on_auto_ignite_check_stateCha..."
-QT_MOC_LITERAL(27, 500, 27), // "on_start_log_button_clicked"
-QT_MOC_LITERAL(28, 528, 26), // "on_stop_log_button_clicked"
-QT_MOC_LITERAL(29, 555, 26) // "on_bode_log_button_clicked"
+QT_MOC_LITERAL(14, 185, 12), // "ignite_flame"
+QT_MOC_LITERAL(15, 198, 23), // "on_reset_button_clicked"
+QT_MOC_LITERAL(16, 222, 21), // "on_set_button_clicked"
+QT_MOC_LITERAL(17, 244, 22), // "on_exit_button_clicked"
+QT_MOC_LITERAL(18, 267, 24), // "on_checkBox_stateChanged"
+QT_MOC_LITERAL(19, 292, 4), // "arg1"
+QT_MOC_LITERAL(20, 297, 25), // "on_connect_button_clicked"
+QT_MOC_LITERAL(21, 323, 26), // "on_send_cmd_button_clicked"
+QT_MOC_LITERAL(22, 350, 27), // "on_reset_dds_button_clicked"
+QT_MOC_LITERAL(23, 378, 24), // "on_ignite_button_clicked"
+QT_MOC_LITERAL(24, 403, 23), // "on_spark_button_clicked"
+QT_MOC_LITERAL(25, 427, 24), // "on_extend_button_clicked"
+QT_MOC_LITERAL(26, 452, 26), // "on_contract_button_clicked"
+QT_MOC_LITERAL(27, 479, 33), // "on_auto_ignite_check_stateCha..."
+QT_MOC_LITERAL(28, 513, 27), // "on_start_log_button_clicked"
+QT_MOC_LITERAL(29, 541, 26), // "on_stop_log_button_clicked"
+QT_MOC_LITERAL(30, 568, 26) // "on_bode_log_button_clicked"
 
     },
     "MainWindow\0closeEvent\0\0QCloseEvent*\0"
@@ -68,9 +69,10 @@ QT_MOC_LITERAL(29, 555, 26) // "on_bode_log_button_clicked"
     "check_serial_port\0update_serial_status\0"
     "reset_lcds\0update_lcds\0update_seconds_cntr\0"
     "read_serial_port\0write_serial_port\0"
-    "on_reset_button_clicked\0on_set_button_clicked\0"
-    "on_exit_button_clicked\0on_checkBox_stateChanged\0"
-    "arg1\0on_connect_button_clicked\0"
+    "ignite_flame\0on_reset_button_clicked\0"
+    "on_set_button_clicked\0on_exit_button_clicked\0"
+    "on_checkBox_stateChanged\0arg1\0"
+    "on_connect_button_clicked\0"
     "on_send_cmd_button_clicked\0"
     "on_reset_dds_button_clicked\0"
     "on_ignite_button_clicked\0"
@@ -90,7 +92,7 @@ static const uint qt_meta_data_MainWindow[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      25,   14, // methods
+      26,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -98,31 +100,32 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,  139,    2, 0x08 /* Private */,
-       5,    0,  142,    2, 0x08 /* Private */,
-       6,    0,  143,    2, 0x08 /* Private */,
-       7,    0,  144,    2, 0x08 /* Private */,
-       8,    0,  145,    2, 0x08 /* Private */,
-       9,    0,  146,    2, 0x08 /* Private */,
-      10,    0,  147,    2, 0x08 /* Private */,
-      11,    0,  148,    2, 0x08 /* Private */,
-      12,    0,  149,    2, 0x08 /* Private */,
-      13,    1,  150,    2, 0x08 /* Private */,
-      14,    0,  153,    2, 0x08 /* Private */,
-      15,    0,  154,    2, 0x08 /* Private */,
-      16,    0,  155,    2, 0x08 /* Private */,
-      17,    1,  156,    2, 0x08 /* Private */,
-      19,    0,  159,    2, 0x08 /* Private */,
-      20,    0,  160,    2, 0x08 /* Private */,
-      21,    0,  161,    2, 0x08 /* Private */,
-      22,    0,  162,    2, 0x08 /* Private */,
-      23,    0,  163,    2, 0x08 /* Private */,
-      24,    0,  164,    2, 0x08 /* Private */,
-      25,    0,  165,    2, 0x08 /* Private */,
-      26,    1,  166,    2, 0x08 /* Private */,
-      27,    0,  169,    2, 0x08 /* Private */,
-      28,    0,  170,    2, 0x08 /* Private */,
-      29,    0,  171,    2, 0x08 /* Private */,
+       1,    1,  144,    2, 0x08 /* Private */,
+       5,    0,  147,    2, 0x08 /* Private */,
+       6,    0,  148,    2, 0x08 /* Private */,
+       7,    0,  149,    2, 0x08 /* Private */,
+       8,    0,  150,    2, 0x08 /* Private */,
+       9,    0,  151,    2, 0x08 /* Private */,
+      10,    0,  152,    2, 0x08 /* Private */,
+      11,    0,  153,    2, 0x08 /* Private */,
+      12,    0,  154,    2, 0x08 /* Private */,
+      13,    1,  155,    2, 0x08 /* Private */,
+      14,    0,  158,    2, 0x08 /* Private */,
+      15,    0,  159,    2, 0x08 /* Private */,
+      16,    0,  160,    2, 0x08 /* Private */,
+      17,    0,  161,    2, 0x08 /* Private */,
+      18,    1,  162,    2, 0x08 /* Private */,
+      20,    0,  165,    2, 0x08 /* Private */,
+      21,    0,  166,    2, 0x08 /* Private */,
+      22,    0,  167,    2, 0x08 /* Private */,
+      23,    0,  168,    2, 0x08 /* Private */,
+      24,    0,  169,    2, 0x08 /* Private */,
+      25,    0,  170,    2, 0x08 /* Private */,
+      26,    0,  171,    2, 0x08 /* Private */,
+      27,    1,  172,    2, 0x08 /* Private */,
+      28,    0,  175,    2, 0x08 /* Private */,
+      29,    0,  176,    2, 0x08 /* Private */,
+      30,    0,  177,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void, 0x80000000 | 3,    4,
@@ -138,7 +141,8 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   18,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   19,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -146,7 +150,7 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   18,
+    QMetaType::Void, QMetaType::Int,   19,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -170,21 +174,22 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 7: _t->update_seconds_cntr(); break;
         case 8: _t->read_serial_port(); break;
         case 9: _t->write_serial_port((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 10: _t->on_reset_button_clicked(); break;
-        case 11: _t->on_set_button_clicked(); break;
-        case 12: _t->on_exit_button_clicked(); break;
-        case 13: _t->on_checkBox_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 14: _t->on_connect_button_clicked(); break;
-        case 15: _t->on_send_cmd_button_clicked(); break;
-        case 16: _t->on_reset_dds_button_clicked(); break;
-        case 17: _t->on_ignite_button_clicked(); break;
-        case 18: _t->on_spark_button_clicked(); break;
-        case 19: _t->on_extend_button_clicked(); break;
-        case 20: _t->on_contract_button_clicked(); break;
-        case 21: _t->on_auto_ignite_check_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 22: _t->on_start_log_button_clicked(); break;
-        case 23: _t->on_stop_log_button_clicked(); break;
-        case 24: _t->on_bode_log_button_clicked(); break;
+        case 10: _t->ignite_flame(); break;
+        case 11: _t->on_reset_button_clicked(); break;
+        case 12: _t->on_set_button_clicked(); break;
+        case 13: _t->on_exit_button_clicked(); break;
+        case 14: _t->on_checkBox_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 15: _t->on_connect_button_clicked(); break;
+        case 16: _t->on_send_cmd_button_clicked(); break;
+        case 17: _t->on_reset_dds_button_clicked(); break;
+        case 18: _t->on_ignite_button_clicked(); break;
+        case 19: _t->on_spark_button_clicked(); break;
+        case 20: _t->on_extend_button_clicked(); break;
+        case 21: _t->on_contract_button_clicked(); break;
+        case 22: _t->on_auto_ignite_check_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 23: _t->on_start_log_button_clicked(); break;
+        case 24: _t->on_stop_log_button_clicked(); break;
+        case 25: _t->on_bode_log_button_clicked(); break;
         default: ;
         }
     }
@@ -215,13 +220,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 25)
+        if (_id < 26)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 25;
+        _id -= 26;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 25)
+        if (_id < 26)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 25;
+        _id -= 26;
     }
     return _id;
 }

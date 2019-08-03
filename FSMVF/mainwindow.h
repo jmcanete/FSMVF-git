@@ -30,6 +30,14 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 #define FPS 30
+
+#define HMIN 0
+#define HMAX 43
+#define SMIN 0
+#define SMAX 255
+#define VMIN 160
+#define VMAX 255
+
 //#define PIX_TO_MM 0.81589958158995815899581589958159
 //#define PIX_TO_CM 0.081589958158995815899581589958159
 //@pixtocm manual calibrated at 100 cm away from camera
@@ -108,9 +116,11 @@ public:
     bool port_avail = false;  //controller is connected
     bool port_status = false; //controller is open
     bool auto_ignite = false; //auto ignite
-    bool video_log = false; //data logging
-    bool csv_log = false;
-    bool bode_log = false;
+    bool video_log = false;   //data logging
+    bool csv_log = false;     //csv logging
+    bool csv_log_file = true; //create csv log file
+    bool bode_log = false;    //bode plot logging
+    bool debug_proc_time = false;  //show processing time in debug
 
     //Matrix for storing images
     Mat frame;
@@ -135,24 +145,29 @@ public:
     QString port_name;
 
     //Data Logging
-    QDateTime *date_time;
-    QTimer *timer;
-    QFile file;
+    QDateTime date_time;
+    QTimer *timer_log;
+    QFile *file;
     QTextStream out;
     QElapsedTimer proc_time;
     QString date;
     QString time;
     QString time_now;
-    QStringList freqs = (QStringList()
-                         << "000050"
-                         << "000075"
-                         << "000100"
-                         << "000125");
+//    QStringList freqs = (QStringList()
+//                         << "000050"
+//                         << "000075"
+//                         << "000100"
+//                         << "000200");
     int freq_cntr = 0;
-    int bode_duration = 0;
+    int bode_duration = 3;
+    int bode_limit = 399;
     int lcd_frames_cntr = 0;
     int lcd_seconds_cntr = 0;
     int lcd_freq_cntr = 0;
+
+    //Auto Ignite
+    QTimer *timer_ignite;
+    int auto_ign_cntr = 0;
 
 private slots:
     void closeEvent(QCloseEvent *event);
@@ -165,6 +180,7 @@ private slots:
     void update_seconds_cntr();
     void read_serial_port();
     void write_serial_port(QString);
+    void ignite_flame();
 
     void on_reset_button_clicked();
 
